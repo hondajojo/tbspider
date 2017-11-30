@@ -40,12 +40,17 @@ func (this *Spider) Run() error {
 			return err
 		}
 
-		this.items = append(this.items, items...)
+		if len(items) >= this.query.Limit{
+			this.items = append(this.items, items[0:this.query.Limit]...)
+			this.isFinish = true
+		}else {
 
-		this.query.SetSkip(this.query.Skip + len(items))
-		this.isFinish = (len(items) == 0 || this.query.IsFinish())
+			this.items = append(this.items, items...)
 
-		time.Sleep(time.Second)
+			this.query.SetSkip(this.query.Skip + len(items))
+			this.isFinish = (len(items) == 0 || this.query.IsFinish())
+			time.Sleep(time.Second)
+		}
 	}
 
 	return nil

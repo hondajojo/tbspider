@@ -19,14 +19,11 @@ type Item struct {
 }
 
 var (
-	parseRegexp = regexp.MustCompile("auctions\":\\[\\{.*\"recommendAucti")
+	parseRegexp, _ = regexp.Compile("auctions\":(.*?),\"recommendAuctions")
 )
 
 func parse(data []byte) (items []*Item, err error) {
-	fdata := string(parseRegexp.Find(data))
-	fdata = strings.Replace(fdata, "auctions\":", "", 1)
-	fdata = strings.Replace(fdata, ",\"recommendAucti", "", 1)
-
+	fdata := parseRegexp.FindStringSubmatch(string(data))[1]
 	err = json.Unmarshal([]byte(fdata), &items)
 
 	for _, item := range items {
